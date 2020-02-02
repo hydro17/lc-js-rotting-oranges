@@ -4,15 +4,11 @@ var orangesRotting = function (grid: number[][]) {
   let areNewRottenOranges = false;
 
   do {
-    for (let i = 0; i < grid.length; i++) {
-      for (let j = 0; j < grid[i].length; j++) {
-        if (grid[i][j] === 2) {
-          makeNeighbouringOrangesRotten(i, j, grid);
-        }
-      }
-    }
+    doActionForAllGridFields(grid, (row, col, grid) => {
+      if (grid[row][col] == 2) makeNeighbouringOrangesRotten(row, col, grid);
+    });
 
-    areNewRottenOranges = false
+    areNewRottenOranges = false;
 
     for (let i = 0; i < grid.length; i++) {
       for (let j = 0; j < grid[i].length; j++) {
@@ -22,14 +18,13 @@ var orangesRotting = function (grid: number[][]) {
       }
     }
 
-    if (areNewRottenOranges) rounds++;
+    if (areNewRottenOranges === true) rounds++;
 
-    for (let i = 0; i < grid.length; i++) {
-      for (let j = 0; j < grid[i].length; j++) {
-        if (grid[i][j] === 3) grid[i][j] = 2;
-      }
-    }
-  } while (areNewRottenOranges);
+    doActionForAllGridFields(grid, (row, col, grid) => {
+      if (grid[row][col] === 3) grid[row][col] = 2;
+    });
+
+  } while (areNewRottenOranges === true);
 
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[i].length; j++) {
@@ -39,6 +34,14 @@ var orangesRotting = function (grid: number[][]) {
 
   return rounds;
 };
+
+function doActionForAllGridFields(grid, action) {
+  for (let i = 0; i < grid.length; i++) {
+    for (let j = 0; j < grid[i].length; j++) {
+      action(i, j, grid);
+    }
+  }
+}
 
 function makeNeighbouringOrangesRotten(i, j, grid) {
   makeOrangeRotten(i - 1, j, grid);
@@ -59,13 +62,22 @@ function isFieldValid(row, col, grid) {
 
 //--- tests ---
 
-const oranges: number[][] = [
+const oranges1: number[][] = [
   [2, 1, 0, 0],
-  [1, 1, 0, 0],
+  [1, 1, 1, 0],
   [0, 1, 0, 0],
   [0, 2, 0, 0]
 ];
 
-console.log(orangesRotting(oranges));
+const oranges2: number[][] = [
+  [2, 1, 0, 0],
+  [1, 1, 1, 0],
+  [0, 1, 0, 0],
+  [0, 2, 0, 1]
+];
 
-console.log(oranges);
+console.log(orangesRotting(oranges1));
+console.log(oranges1);
+
+console.log(orangesRotting(oranges2));
+console.log(oranges2);
