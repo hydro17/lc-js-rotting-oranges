@@ -1,62 +1,71 @@
 
 var orangesRotting = function (grid: number[][]) {
-  const fieldsTocheck = [[]];
-  let round = fieldsTocheck.length - 1;
+  let rounds = 0;
+  let areNewRottenOranges = false;
+
+  do {
+    for (let i = 0; i < grid.length; i++) {
+      for (let j = 0; j < grid[i].length; j++) {
+        if (grid[i][j] === 2) {
+          makeNeighbouringOrangesRotten(i, j, grid);
+        }
+      }
+    }
+
+    areNewRottenOranges = false
+
+    for (let i = 0; i < grid.length; i++) {
+      for (let j = 0; j < grid[i].length; j++) {
+        if (grid[i][j] === 3) {
+          areNewRottenOranges = true;
+        }
+      }
+    }
+
+    if (areNewRottenOranges) rounds++;
+
+    for (let i = 0; i < grid.length; i++) {
+      for (let j = 0; j < grid[i].length; j++) {
+        if (grid[i][j] === 3) grid[i][j] = 2;
+      }
+    }
+  } while (areNewRottenOranges);
 
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[i].length; j++) {
-      if (grid[i][j] === 2) addNeighboursOfRottenOrange(i, j, grid, fieldsTocheck, round);
+      if (grid[i][j] === 1) return -1;
     }
   }
 
-  console.log(fieldsTocheck);
-
-  do {
-    fieldsTocheck.push([]);
-    let nextRound = fieldsTocheck.length - 1;
-
-    while (fieldsTocheck[round].length > 0) {
-      const [i, j] = fieldsTocheck[round].pop();
-      getRottenOrange(i, j, grid, fieldsTocheck, nextRound);
-    }
-    round = nextRound;
-
-  } while (fieldsTocheck[round].length > 0);
-
-  return round - 1;
+  return rounds;
 };
 
-const getRottenOrange = (i, j, grid, fieldsTocheck, round) => {
-  grid[i][j] = 2;
-  addNeighboursOfRottenOrange(i, j, grid, fieldsTocheck, round);
+function makeNeighbouringOrangesRotten(i, j, grid) {
+  makeOrangeRotten(i - 1, j, grid);
+  makeOrangeRotten(i, j + 1, grid);
+  makeOrangeRotten(i + 1, j, grid);
+  makeOrangeRotten(i, j - 1, grid);
 }
 
-const addNeighboursOfRottenOrange = (i, j, grid, fieldsTocheck, round) => {
-  let row, col;
+function makeOrangeRotten(row, col, grid) {
+  if (isFieldValid(row, col, grid) && grid[row][col] === 1) {
+    grid[row][col] = 3;
+  }
+}
 
-  row = i - 1;
-  col = j;
-  if (row >= 0 && grid[row][col] === 1) fieldsTocheck[round].unshift([row, col]);
-
-  row = i;
-  col = j + 1;
-  if (col < grid[i].length && grid[row][col] === 1) fieldsTocheck[round].unshift([row, col]);
-
-  row = i + 1;
-  col = j;
-  if (row < grid.length && grid[row][col] === 1) fieldsTocheck[round].unshift([row, col]);
-
-  row = i;
-  col = j - 1;
-  if (col >= 0 && grid[row][col] === 1) fieldsTocheck[round].unshift([row, col]);
+function isFieldValid(row, col, grid) {
+  return row >= 0 && row < grid.length && col >= 0 && col < grid[row].length;
 }
 
 //--- tests ---
 
 const oranges: number[][] = [
-  [2, 1, 1],
-  [1, 1, 0],
-  [0, 1, 0]
+  [2, 1, 0, 0],
+  [1, 1, 0, 0],
+  [0, 1, 0, 0],
+  [0, 2, 0, 0]
 ];
 
 console.log(orangesRotting(oranges));
+
+console.log(oranges);
